@@ -1,0 +1,52 @@
+
+\section{(Expected) Results}
+
+We are considering the following three things for three ``levels'':
+
+\begin{enumerate}
+
+\item How do the following correlate with any of the religiosity or instability indicators?
+    \begin{enumerate}
+        \item religious terms
+        \item revolution/insurgent/violence or adaptation terms
+        \item network graph level metrics
+        \item mentions of terror groups
+        \item mentions of ethnic groups
+        \item size metrics - number of actors, number of posts,
+        number of words, number of ties
+        \item mentions of sports
+        \item mentions of disease
+    \end{enumerate}
+
+\item Overall- is there a stronger signal in news or twitter?  
+
+\item Are news and twitter at all correlated with each other?
+
+
+\end{enumerate}
+
+
+\subsection{General Covariates- the ``strong obvious signal''}
+
+We study these things in general (not worrying about over time) 
+
+I (KC) expect most of this will say - NO CORRELATION
+
+
+\subsection{Country differences by time - the ``somewhat hidden signal''}
+
+We study these things using the images for country only data where the boxes are normalized by number of articles.
+
+I (KC) expect here that most of this will show - a) twitter and news have similar signals, and most things are across most countries 
+
+\subsection{Temporal differences - the ``subtle'' signal}
+ 
+Here we pick the indicators - general instability (low high), level of
+terrorism, and for each indicator we take the set of countries that are
+in some level - e.g. low on general instability, then for each value on
+the indicator we take the variable (e.g. number of articles using a term related to violence) that has been normalized and find the average across the countries for that month.  Then we plot the over time images (so there is one line per level of the variable) and talk about the trends - and put a verticle bar where the revolutions began
+
+Here we are therefore analyzing change by time by level of indicator 
+
+I (KC) expect here that most of this will show - a) twitter and news have similar signals, and the average for some indicators will be very different
+

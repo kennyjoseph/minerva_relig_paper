@@ -1,0 +1,63 @@
+% !TEX TS-program = pdflatex
+% !TEX encoding = UTF-8 Unicode
+
+% This is a simple template for a LaTeX document using the "article" class.
+% See "book", "report", "letter" for other types of document.
+\documentclass[11pt,man]{article}
+\usepackage[natbibapa]{apacite}
+\usepackage{array}
+\usepackage{color}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage[font={small}]{caption, subfig}
+\usepackage[vlined,ruled, noend,linesnumbered]{algorithm2e} 
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{enumitem}
+\usepackage{authblk}
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+
+\definecolor{Orange}{rgb}{1,0.5,0}
+\definecolor{Purple}{rgb}{1,0,1}
+\newcommand{\todo}[1]{\textsf{\textbf{\textcolor{Orange}{todo: [[#1]]}}}}
+\newcommand{\unclear}[1]{\textsf{\textbf{\textcolor{Purple}{[[#1]]}}}}
+\newcommand{\Expect}{{\rm I\kern-.3em E}}
+
+\title{Revolution, religiosity, and social change during the Arab Spring as viewed by the news and Twitter}
+
+\author[1]{Kenneth Joseph \thanks{\texttt{kjoseph@cs.cmu.edu}}}
+\author[1]{Matthew Benigni \thanks{\texttt{mbenigni@cs.cmu.edu}}}
+\author[1]{Wei Wei \thanks{\texttt{weiwei@cs.cmu.edu}}}
+\author[1]{Kathleen M. Carley\thanks{\texttt{kathleen.carley@cs.cmu.edu}}}
+\author[2]{Mia Bloom\thanks{\texttt{mia\_bloom@uml.edu}}}
+
+\affil[1]{Computation, Organization and Society Program\\ Carnegie Mellon University\\ 5000 Forbes Ave. \\ Pittsburgh, PA, USA}
+\affil[2]{Center for Terrorism and Security Studies\\ University of Massachusetts, Lowell\\ Lowell, MA, USA}
+
+
+\begin{document}
+\maketitle
+\renewcommand{\baselinestretch}{2}\normalsize
+
+\begin{abstract}
+
+\end{abstract}
+
+\input{intro}
+
+\input{related_work}
+
+\input{results}
+
+\input{todo}
+
+
+\bibliographystyle{apacite}
+\bibliography{mybib} %your bib file
+
+
+\end{document}
