@@ -1,69 +1,64 @@
 \section{Introduction}
 
-Much has been made of the use of social media during the Arab Spring. At this point, it is almost common knowledge that the emphasis on social media as a \emph{cause} of the revolutions is overblown \citep{bruns_arab_2013,goldstone_bringing_2013} . However, many scholars have pointed to the fact that the use of social media may have aided certain aspects of the revolutions in important ways for different people  \citep{galle_who_2013,starbird_how_2012,papacharissi_affective_2012} and that data from social media may help to understand how the revolutions grew and spread \citep{lotan_revolutions_2011,bruns_arab_2013}. By the same token, recent work has suggested that data from news media during the time of the Arab Spring may have itself been indicative of important developments during that time period \cite{joseph_arab_2014,pfeffer_rapid_2012}.
+Much has been made of the use of social media during the Arab Spring. At this point, it is almost common knowledge that the emphasis on social media as a \emph{cause} of the revolutions is overblown \citep{bruns_arab_2013,goldstone_bringing_2013}. However, many scholars have pointed to the fact that the use of social media may have aided certain aspects of the revolutions in important ways for different people  \citep{galle_who_2013,starbird_how_2012,papacharissi_affective_2012} and that data from social media may help to understand how the revolutions grew and spread \citep{lotan_revolutions_2011,bruns_arab_2013}. By the same token, recent work has suggested that data from news media during the time of the Arab Spring may have itself been indicative of important developments during that time period \citep{joseph_arab_2014,pfeffer_rapid_2012}.
 
-The present work considers behavior on social media and news indicators as two predictors in a more general framework of instability. We consider 3 levels of predictors...
+The present work takes the view that social and news media data can be used to support or refute hypotheses that have been generated in recent work as to the causes and consequences of the Arab Spring. At the same time, we also support the rash of recent claims that the myriad methodological trapdoors that exist within this type of data suggest the need for cautious, nuanced analysis which accounts for or at least admits these possible biases\cite{tufekci_big_2014,ruths_social_2014,joseph_approach_2014,morstatter_is_2013}. While previous work has dealt with some of these issues, ...
 
-We use increasing nuance w/ Twitter/News predictors...
+	...These concerns include the fact that ``data-driven'' analysis often suffers from post-hoc conclusions which substantially increase the number of ``researcher degrees of freedom'', even if unintentionally, in the analysis \cite{}. 
 
-We first try to understand how all of these predictors correlate with each other. We then use them to predict XYZ.  
+\subsection{Concrete Hypotheses}
 
-Our work provides a more nuanced view of the conclusions that can be reached via the analysis of both social media and newspaper data in the context of the underlying social and political climates of the region. 
+\begin{itemize}
+	\item {\bf H1}: If a country has more disparate groups, it is more unstable
+	\item {\bf H2}: If these groups align under a revolutionary cause, the revolution is more likely to succeed
+	\item {\bf H3}: (term network) if media representation shows protestors as representative of the whole society, rather than as one particular group seeking partisan advantages for itself, revolution will be more successful
+	%\item {\bf H3}: virtual networks materialized before street protest networks.
+	%\item {\bf H4}: Allegedly large increases in higher education did not lead to economic improvement and resulted in frustrated recent college graduates.  Some of the term networks in Tunisia could be used to illustrate “youth bulge” and quantify this dissent theory.
+	%\item {\bf H5}: It would also be interesting to look at what terms are highly connected with unemployment in both the news and twitter term networks over time.
+\end{itemize}
 
-We find that ...
-
-... This finding suggests that high-level analyses of things like the number of tweets from a given country and tweets relevant to a particular word are only useful after careful consideration of the variety of biases inherent in this sort of data and of other important covariates.
-
-\subsection{My list of covariates}
-
-\begin{enumerate}
-    \item {\bf Regime-based}
-        \begin{enumerate}
-            \item black-out of media vs not black out media 
-            \item religious freedom indices
-            \item personalist/not \cite{goldstone_bringing_2013}
-            \item wealth (particularly oil) \cite{goldstone_bringing_2013}
-            \item Twitter/News mentions of regime (of some kind) - sentiment?
-            \item Twitter/News revolution/insurgent/violence or adaptation terms
-        \end{enumerate}
-    \item {\bf International relations} 
-        \begin{enumerate}
-            \item international network position
-            \item international Twitter/News network position
-        \end{enumerate}
-    \item {\bf Population indicators } 
-        \begin{enumerate}
-            \item Twitter/news geospatial spread
-            \item Religious indices
-            \item Ethnic diversity / group indicators
-            \item Twitter/news mentions of ethnic group
-            \item Twitter/news attention / network position
-            \item Twitter/news ``class'' cohesiveness \cite{goldstone_cross-class_2011}
-            \item Twitter/news ``class'' spread \cite{goldstone_cross-class_2011}
-        \end{enumerate}
-\end{enumerate}
-
-\subsection{Research Questions}
-
-\begin{enumerate}
-    \item {\bf Prediction task: Predict from combination of: }
-        \begin{enumerate}
-            \item Did revolution happen? Y/N
-            \item Was revolution quelled? Y/N
-            \item Is it still ongoing - did anything change? Y/N
-        \end{enumerate}
-
-    \item {\bf Prediction task: Predict level of instability}
-\end{enumerate}
-
-\subsection{Outstanding todos/questions}
-
-\begin{enumerate}
-    \item Most indicators come from news - how do we assess impact of news?
-    \item What is a reasonable dependent variable for stability?
-    \item Figure out what is up with that jump in the Twitter data
-    \item Run Netmapper/get news networks
-\end{enumerate}
+Supplement w/ country-based vingettes -> where these methods are helpful. E.g.
+\begin{itemize}
+ 	\item Attempt to quantify how Mohammad Bouazizi’s setting himself on fire spreads across normally disconnected factions within the Twitter data in Tunisia from Dec 2010 – Feb 2011.
+ 	\item I think we could use our religiosity terms to measure factionalism/sectarianism at the onset of Egypt’s protests.  Both counts and term networks could be useful.
+\end{itemize}
 
 
+\subsection{Data Exploration}
 
+\begin{itemize}
+	\item correlations w/ official indicators
+	\item Regime-type effects
+\end{itemize}
+
+
+%
+%\subsection{My list of covariates}
+%
+%\begin{enumerate}
+%    \item {\bf Regime-based}
+%        \begin{enumerate}
+%            \item religious freedom indices
+%            \item personalist/not \cite{goldstone_bringing_2013}
+%            \item wealth (particularly oil) \cite{goldstone_bringing_2013}
+%            \item Twitter/News mentions of regime (of some kind) - sentiment?
+%            \item Twitter/News revolution/insurgent/violence or adaptation terms
+%        \end{enumerate}
+%    \item {\bf International relations} 
+%        \begin{enumerate}
+%            \item international network position
+%            \item international Twitter/News network position
+%        \end{enumerate}
+%    \item {\bf Population indicators } 
+%        \begin{enumerate}
+%            \item Twitter/news geospatial spread
+%            \item Religious indices
+%            \item Ethnic diversity / group indicators
+%            \item Twitter/news mentions of ethnic group
+%            \item Twitter/news attention / network position
+%            \item Twitter/news ``class'' cohesiveness \cite{goldstone_cross-class_2011}
+%            \item Twitter/news ``class'' spread \cite{goldstone_cross-class_2011}
+%        \end{enumerate}
+%\end{enumerate}
+%
+%
