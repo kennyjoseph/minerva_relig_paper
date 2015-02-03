@@ -23,9 +23,14 @@
 
 \definecolor{Orange}{rgb}{1,0.5,0}
 \definecolor{Purple}{rgb}{1,0,1}
-\newcommand{\todo}[1]{\textsf{\textbf{\textcolor{Orange}{todo: [[#1]]}}}}
-\newcommand{\unclear}[1]{\textsf{\textbf{\textcolor{Purple}{[[#1]]}}}}
+\definecolor{Green}{rgb}{0,1,0}
+\newcommand{\todoMatt}[1]{\textsf{\textbf{\textcolor{Orange}{todo Matt: [[#1]]}}}}
+\newcommand{\todoKenny}[1]{\textsf{\textbf{\textcolor{Purple}{todo Kenny: [[#1]]}}}}
+\newcommand{\todoWei}[1]{\textsf{\textbf{\textcolor{Green}{todo Wei: [[#1]]}}}}
 \newcommand{\Expect}{{\rm I\kern-.3em E}}
+
+
+\def\citeapos#1{\citeauthor{#1}'s (\citeyear{#1})}
 
 \title{Revolution, religiosity, and social change during the Arab Spring as viewed by the news and Twitter}
 
@@ -49,7 +54,7 @@
 
 
 \input{intro}
-\input{hatem}
+%\input{hatem}
 
 
 \input{related_work}
@@ -57,6 +62,8 @@
 \input{results}
 
 \input{todo}
+
+\input{conclusion}
 
 
 \bibliographystyle{apacite}
