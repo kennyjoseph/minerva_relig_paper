@@ -1,11 +1,54 @@
 
-\section{(Expected) Results}
+\section{Methods}
 
   Tunisia timeline: 12/27/10 -> 4/9 Ben Ali fled
-    Egypt timeline: 1/25/11 -> 2/11 Mubarak leaves
-    Libya: 2/15 -> 8/20
+  Egypt timeline: 1/25/11 -> 2/11 Mubarak leaves
+  Libya: 2/15 -> 8/20
+  
+ \begin{align*}
+ 	C \sim \mathrm{Bin}(act + act_{country} + act_{glob}, |U|}
+ \end{align*}
+
+1. lag data
+2. category
+3. revolutionary state
+4. cat*rev_state
+5. transition?
+6. global count
+7. country count
+8. activation
+9. regularizer
+
+\emph{for h1}
+
+twitter network structure
+	eng/ar split, by week, before/during/after
+ 	components, modularity of LWCC, n news, n mixed
+
+news:
+	term counts
+	term centralities
+
+controls: 
+	size metrics - number of actors, number of posts, number of words, number of ties
+
+EXPLANATION -> sheer topic counts - hashtags, 
+
+metrics:
+	revolutionary success (long run)
+	mention of revolution
+	vingettes - goldstone in short-term
 
 
+\emph{step 2}
+
+Lets see correlations, add some spurious stuff in there and some other potential stuff in there, see what agrees with what
+	
+\emph{other}
+international network position
+religious freedom indices
+
+\cite{hussain_what_2013}
 regime 
 class-spread
 Average Incomes Within Country
@@ -17,65 +60,4 @@ Fuel-dependent Economy
 
 Regime Fragility 	
 Social Movement Success 
-
-black-out of media vs not black out media 
-religious freedom indices
-
-Twitter
-News 
-international network position
-Ethnic diversity / group indicators
-
-Twitter and news as independent or representative of?
-
-
-
-We are considering the following three things for three ``levels'':
-
-\begin{enumerate}
-
-\item How do the following correlate with any of the religiosity or instability indicators?
-    \begin{enumerate}
-        \item religious terms
-        \item network graph level metrics
-        \item mentions of terror groups
-        \item mentions of ethnic groups
-        \item revolution/insurgent/violence or adaptation terms
-        \item size metrics - number of actors, number of posts,
-        number of words, number of ties
-        \item mentions of sports
-        \item mentions of disease
-    \end{enumerate}
-
-\item Overall- is there a stronger signal in news or twitter?  
-
-\item Are news and twitter at all correlated with each other?
-
-
-\end{enumerate}
-
-wewe
-\subsection{General Covariates- the ``strong obvious signal''}
-
-We study these things in general (not worrying about over time) 
-
-I (KC) expect most of this will say - NO CORRELATION
-
-
-\subsection{Country differences by time - the ``somewhat hidden signal''}
-
-We study these things using the images for country only data where the boxes are normalized by number of articles.
-
-I (KC) expect here that most of this will show - a) twitter and news have similar signals, and most things are across most countries 
-
-\subsection{Temporal differences - the ``subtle'' signal}
- 
-Here we pick the indicators - general instability (low high), level of
-terrorism, and for each indicator we take the set of countries that are
-in some level - e.g. low on general instability, then for each value on
-the indicator we take the variable (e.g. number of articles using a term related to violence) that has been normalized and find the average across the countries for that month.  Then we plot the over time images (so there is one line per level of the variable) and talk about the trends - and put a verticle bar where the revolutions began
-
-Here we are therefore analyzing change by time by level of indicator 
-
-I (KC) expect here that most of this will show - a) twitter and news have similar signals, and the average for some indicators will be very different
 

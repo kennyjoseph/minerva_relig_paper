@@ -1,0 +1,35 @@
+doctor
+health care worker
+nurse
+electrician
+engineer
+farmer
+lawyer
+miner
+plumber
+salesperson
+teacher
+welder
+fisherman
+textile worker
+textile mill workers
+insurance salesman
+food-processing worker
+food-processing plant worker
+fertilizer plant worker
+sugar refinery worker
+banker
+accountant
+public employee
+plant worker
+refinery worker
+union worker
+street vendor
+municipal worker
+mechanic
+unemployed worker
+pharmacist
+scientist
+
+
+
