@@ -1,8 +1,9 @@
 library(snowfall)
+library(data.table)
 load("result_data/final_data.rdata")
 STEP_SIZE = .0000001 # step size
 PRECISION = .000000001
-N_CPU=2
+N_CPU=60
 
 ##generic gradient, the estimation doesn't change much between the two variables
 gradient_function <- function(old_val, data, expval){
@@ -18,7 +19,7 @@ sfExport("gradient_function")
 sfExport("STEP_SIZE")
 sfExport("PRECISION")
 sfExport("final_data")
-
+sfLibrary(data.table)
 mu_table <- data.table(expand.grid(country=ALL_COUNTRIES,
                        datetime=ALL_TIMES,
                        type=c("NEWS","TWITTER"),stringsAsFactors=F))
@@ -49,7 +50,7 @@ sfExport("gradient_function")
 sfExport("STEP_SIZE")
 sfExport("PRECISION")
 sfExport("final_data")
-
+sfLibrary(data.table)
 v_table <- data.table(expand.grid(category=ALL_CATEGORIES,
                                    datetime=ALL_TIMES,
                                    type=c("NEWS","TWITTER"),stringsAsFactors=F))
@@ -71,5 +72,7 @@ v_values <- parApply(sfGetCluster(),v_table,1, function(v_vals){
   }
   return(v_new)
 })
-  
-  save(final_data,file="result_data/final_data_w_mu_v.rdata")
+
+v_table$v_est <- v_values
+final_data <- merge(final_data,v_table,by=c("category","datetime","type"))
+save(final_data,file="result_data/final_data_w_mu_v.rdata")
