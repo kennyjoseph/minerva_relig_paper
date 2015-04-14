@@ -55,4 +55,7 @@ target/
 .Rproj.user
 
 R/raw_data
-R/result_data/data_environment.RData
+R/result_data/full_news_data.rdata
+R/result_data/full_twitter_data.rdata
+R/test_algs.R
+R/result_data/twitter_user_counts.rdata

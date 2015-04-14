@@ -11,167 +11,22 @@ library(data.table)
 library(ggplot2)
 library(bit64)
 
-remove_countries <- c("sudan","qatar")
-TERMS_TO_REMOVE <- c("im","saudi","pkk","dr")
-
 inv_logis <- function(x){return(log(x/(1-x)))}
 
-concept_to_category <- fread(file.path(DATA_DIR,"goldstone_to_category.tsv"),header=F)
-setnames(concept_to_category,c("concept","category"))
-concept_to_category$concept <- tolower(concept_to_category$concept)
-
-
 ```
 
-Piece together Twitter data
-===================
-```{r gen-data, cache=TRUE, results='hide',message=FALSE}
-##all this data was determined via casos_get_twitter_term_nets.py
-
-###USER COUNT STUFF
-#the number of users per country per month that tweeted at least once.
-##loc_type is how we determined country (full == both, geo, text)
-user_count <- fread(file.path(DATA_DIR,"twitter_usercount.tsv"))
-user_count <- user_count[,sum(V3),by=c("V1","V2","V4")]
-setnames(user_count, c("country","date","loc_type","count"))
-user_count <- user_count[!country %in% remove_countries]
-user_count$datetime <- ymd(paste(user_count$date,"-01",sep=""))
-user_count$date <- NULL
-
-####TERM COUNT STUFF
-term_count <- fread(file.path(DATA_DIR, "twitter_termcount.tsv"))
-setnames(term_count, c("tw_id","datetime","uid","concept","raw","country","loc_type"))
-
-###see if anything weird showed up... definitely "im", "pkk" and "saudi", which is used to capture tweets. 
-#Get rid of them
-ck_bad_raw <- term_count[,length(unique(uid)),by=c("raw","concept")]%>% arrange(-V1)
-term_count <- term_count[!raw %in% TERMS_TO_REMOVE,]
-term_count$datetime <- ymd(term_count$datetime)
-
-####***only using 2011 -> beginning of 2013 for sampling reasons
-term_count <- term_count[datetime > ymd("2011-01-31") & datetime < ymd("2013-03-01"),]
-term_count$md <- paste(year(term_count$datetime),month(term_count$datetime),sep="-")
-term_count$loc_type <- tolower(term_count$loc_type)
-term_count$concept <- tolower(term_count$concept)
-term_count <- merge(term_count,concept_to_category,by="concept",all.x=T)
-
-##See if there are any concepts we can just ignore because they are so sparse
-ck_lame_cat <- term_count[,length(unique(uid)),by=c("category")] %>% arrange(-V1)
-term_count <- term_count[!is.na(category)] #things we clean post-hoc from concept -> category list
-##Lets toss the low-lying categories - < 5000 users out of 800K is pretty uninteresting, at least for right now
-term_count <- term_count[category %in% ck_lame_cat[V1 > 5000,]$category]
-
-##number of users per category per country per month - in other words, c_r,w,t
-user_per_cat <- term_count[,length(unique(uid)),by=c("category","country","md")]
-user_per_cat$loc_type <- "full"
-user_per_cat$datetime <- ymd(paste(user_per_cat$md,"-01",sep=""))
-setnames(user_per_cat,"V1","c_wrt")
-user_per_cat$md <- NULL
-
-###MERGE
-setnames(user_count,"count","s_wrt")
-full_data <- merge(user_per_cat,user_count,by=c("country","loc_type","datetime"))
-##only use counts from the full dataset
-full_data <- full_data[loc_type=="full"]
-full_data$loc_type <- NULL
-
-ALL_TWITTER_CATEGORIES <- unique(full_data$category)
-ALL_TWITTER_COUNTRIES <- unique(full_data$country)
-ALL_TWITTER_TIMES <- unique(full_data$datetime)
-
-
-full_factorial_data <- data.table(expand.grid(ALL_TWITTER_COUNTRIES,ALL_TWITTER_TIMES,ALL_TWITTER_CATEGORIES,
-                                  stringsAsFactors=F))
-
-setnames(full_factorial_data, names(full_data)[1:3])
-full_factorial_data <- merge(full_factorial_data,full_data,by=c("country","datetime","category"),all.x=T)
-full_factorial_data[is.na(c_wrt)]$c_wrt <- 0
-full_factorial_data[is.na(s_wrt)]$s_wrt <- 0
-full_twitter_data <- full_factorial_data
-```
-
-
-Piece together Newspaper Data
+Load data
 ======================
+
+The process to get this data is as follows:
+1. Run ```casos_get_twitter_term_nets.py``` on the data
+2. Run ```casos_get_news_term_nets.py``` on the data
+3. Run  ```transform_raw_news_data.R``` which will save out ```result_data/full_news_data.rdata``` and ```results_data/news_data.rdata```
+4. Run ```transform_raw_twitter_data.R```, which will save out  ```result_data/full_twitter_data.rdata``` and ```results_data/twitter_data.rdata```
+5. Run ```get_simplified_nu_value.R```, which will finally save out ```result_data/final_data.rdata```. It'd probably be good to keep this last step in the markdown data but moving it elsewhere and just loading in the data lets me not have to load a ridiculous amount of data into the process in this script
+
 ```{r gen-data, cache=TRUE, results='hide',message=FALSE}
-library(stringr)
-
-ctm <- fread(file.path(DATA_DIR,"country_to_articles.csv"))
-news_df <- fread(file.path(DATA_DIR,"news_term_counts.tsv"))
-setnames(news_df, c("date","articleNumber","concept","raw"))
-
-news_df <- merge(news_df, ctm, by=c("date","articleNumber"),allow.cartesian=T)
-
-##ck bad; looks okay
-news_df <- news_df[! (raw %in% TERMS_TO_REMOVE)]
-ck_bad_raw <- news_df[,length(unique(paste0(date,articleNumber))),by=c("raw","concept")]%>% arrange(-V1)
-
-##cleaning more
-news_df$datetime <- ymd(news_df$date)
-news_df$concept <- tolower(news_df$concept)
-news_df <- merge(news_df,concept_to_category,by="concept",all.x=T)
-news_df <- news_df[!is.na(category)] #things we clean post-hoc from concept -> category list
-
-##See if there are any concepts we can just ignore because they are so sparse
-ck_lame_cat <- news_df[,length(unique(paste0(articleNumber,date))),by=c("category")] %>% arrange(-V1)
-##Lets toss the low-lying categories - < 5000 users out of 800K is pretty uninteresting, at least for right now
-news_df <- news_df[category %in% ck_lame_cat[V1 > 5000,]$category]
-
-news_df$country[news_df$country =="saudi arabia"] <- "saudi_arabia"
-news_df$country[news_df$country =="united arab emirates"] <- "uae"
-
-news_df$md <- paste(year(news_df$datetime),month(news_df$datetime),sep="-")
-
-##number of users per category per country per month - in other words, c_r,w,t
-articles_per_cat <- news_df[,length(unique(articleNumber)),by=c("category","country","md")]
-setnames(articles_per_cat,"V1","c_wrt")
-
-ctm$md <- paste(year(ctm$date),month(ctm$date),sep="-")
-articles_per_month <- ctm[,length(articleNumber),by=c("md","country")]
-setnames(articles_per_day,c(""))
-articles_per_month$country[articles_per_month$country =="saudi arabia"] <- "saudi_arabia"
-articles_per_month$country[articles_per_month$country =="united arab emirates"] <- "uae"
-setnames(articles_per_month,"V1","s_wrt")
-
-###Final clean and merge
-full_news_data <- merge(articles_per_cat,articles_per_month,by=c("country","md"))
-full_news_data$datetime <- ymd(paste(full_news_data$md,"-01",sep=""))
-full_news_data$md <- NULL
-##only use counts from the full dataset
-ALL_NEWS_CATEGORIES <- unique(full_news_data$category)
-ALL_NEWS_COUNTRIES <- unique(full_news_data$country)
-ALL_NEWS_TIMES <- unique(full_news_data$datetime)
-
-full_factorial_data <- data.table(expand.grid(country=ALL_NEWS_COUNTRIES,
-                                              datetime=ALL_NEWS_TIMES,
-                                              category=ALL_NEWS_CATEGORIES,
-                                              stringsAsFactors=F))
-full_factorial_data <- merge(full_factorial_data,full_news_data,by=c("country","datetime","category"),all.x=T)
-full_factorial_data[is.na(c_wrt)]$c_wrt <- 0
-full_factorial_data[is.na(s_wrt)]$s_wrt <- 0
-full_news_data <- full_factorial_data
-
-```
-
-Combine the two datasets
-======================
-```{r gen-data, cache=TRUE, results='hide',message=FALSE}
-full_news_data$type <- "NEWS"
-full_twitter_data$type <- "TWITTER"
-full_data <- rbind(full_news_data,full_twitter_data)
-ALL_CATEGORIES <- intersect(ALL_TWITTER_CATEGORIES,ALL_NEWS_CATEGORIES)
-ALL_TIMES <- intersect(ALL_TWITTER_TIMES,ALL_NEWS_TIMES)
-ALL_COUNTRIES <- ALL_TWITTER_COUNTRIES
-full_data <- full_data[category %in% ALL_CATEGORIES &
-                        full_data$datetime %in% ALL_TIMES ]
-
-term_count$ymd_date <- ymd(paste(term_count$md,"-01",sep=""))
-ctm$ymd_date <- ymd(paste(ctm$md,"-01",sep=""))
-news_df$ymd_date <- ymd(paste(news_df$md,"-01",sep=""))
-TOTAL_N_USERS <- length(unique(term_count[category %in% ALL_CATEGORIES &
-                                          ymd_date %in% ALL_TIMES]$uid))
-N_NEWS_ARTICLES <- length(unique(paste(ctm[ymd_date %in% ALL_TIMES]$articleNumber,ctm$date,sep="!!!")))
-
+load("result_data/final_data.rdata")
 ```
 
 
@@ -190,7 +45,7 @@ Here the subscripts represent the following: $w$ is the word, $r$ is the region,
 
 Here, we do some EDA:
 ```{r fig.width=12, fig.height=8, cache=TRUE}
-fd <- full_data[category %in% c("nationality","tribe")]
+fd <- final_data[category %in% c("nationality","tribe")]
 fd$prop <- ifelse(fd$s_wrt == 0, 0, fd$c_wrt/fd$s_wrt)
 ggplot(fd, aes(datetime,prop,color=category,shape=type)) + geom_point() + facet_wrap(~country, scales="free_y") + geom_line() + ylab("Proportion of Users Used it") + xlab("Month") + theme(axis.text.x=element_text(angle=45,hjust=1))
 ```
@@ -208,28 +63,7 @@ Because of the lagged influence assumption, the model proposed is a latent vecto
 
 $$ P(\eta,c|s; A, \sigma^2,\mu,v) = P(c | \eta, s; \mu, v) P(\eta; A)$$
 
-In order to do so, we adopt the same estimation process as was used by Eisenstein.  We first consider the estimation of $v$ and $\mu$ for each word assuming $\eta$ is 0.  To do so, we utilize a stepwise proceedure.  First, we obtain a simplified $\bar{v_w}$ as the inverse logistic function ($log(\frac{x}{1-x}$) of the total proportion of users that utilized word $w$ across all time steps.
-
-
-```{r}
-v_w_data.twitter <- term_count[term_count$ymd_date %in% ALL_TIMES,
-                               length(unique(uid))/TOTAL_N_USERS,by=c("category")]
-v_w_data.twitter$simp_v_w <- inv_logis(v_w_data.twitter$V1)
-v_w_data.twitter$V1 <- NULL
-full_twitter_data <- merge(full_twitter_data, v_w_data.twitter, by="category")
-
-
-v_w_data.news <- news_df[ymd_date %in% ALL_TIMES,
-                         length(unique(paste(articleNumber,date,sep="!!!")))/N_NEWS_ARTICLES,by=c("category")]
-v_w_data.news$simp_v_w <- inv_logis(v_w_data.news$V1)
-v_w_data.news$V1 <- NULL
-full_news_data <- merge(full_news_data, v_w_data.news, by="category")
-
-full_data <- rbind(full_twitter_data,full_news_data)
-full_data <- full_data[category %in% ALL_CATEGORIES &
-                        full_data$datetime %in% ALL_TIMES ]
-
-```
+In order to do so, we adopt the same estimation process as was used by Eisenstein.  We first consider the estimation of $v$ and $\mu$ for each word assuming $\eta$ is 0.  To do so, we utilize a stepwise proceedure.  First, we obtain a simplified $\bar{v_w}$ as the inverse logistic function ($log(\frac{x}{1-x}$) of the total proportion of users that utilized word $w$ across all time steps. This is done in the file ```get_simplified_nu_value.R``` and is called ```simp_v_est``` in ```final_data```
 
 Using this, we now would like to compute the MLE of each $\mu_{r,t}$ using this as $v_{w,t}$ (and again, setting all $\eta = 0$).  Below I derive the MLE for a single time point $t$ and a single word $w$ (subscripts thus implicit), a step absent presumably due to simplicitly/space from the original article.  In order to do so, I have to optimize the following (note that maximizing the likelihood is the same as minimizing the negative log-likelihood):
 
@@ -255,8 +89,9 @@ We use this as the input for a gradient descent proceedure to estimate $\mu$. We
 
 
 ```{r, cache=TRUE, results='hide'}
+
 STEP_SIZE = .00001 # step size
-PRECISION = .0001
+PRECISION = .000000001
 
 ##generic gradient, the estimation doesn't change much between the two variables
 gradient_function <- function(old_val, data, expval){
@@ -268,20 +103,20 @@ gradient_function <- function(old_val, data, expval){
 }
 
 ##dummy data
-full_data$mu_est <- -99
-full_data$v_est <- -99
+final_data$mu_est <- -99
+final_data$v_est <- -99
 
 ## Gradient descent for mu
 for(type_var in c("NEWS","TWITTER")){
   for(country_var in ALL_COUNTRIES) {
     for(time_var in ALL_TIMES){
-      data <- full_data[full_data$type==type_var &
+      data <- final_data[final_data$type==type_var &
                         country == country_var & 
-                        full_data$datetime == time_var]
+                        final_data$datetime == time_var]
       mu_old = 0
       mu_new = 1
       i = 0
-      while(i < 100 & abs(mu_old - mu_new) > PRECISION ){
+      while(i < 10000000  & abs(mu_old - mu_new) > PRECISION ){
         i <- i + 1
         mu_old = mu_new
         expval <- exp(data$simp_v_w + mu_old)
@@ -290,8 +125,8 @@ for(type_var in c("NEWS","TWITTER")){
       }
       print(paste("New minimum for time", time_var, 
                   " in country", country_var, " is ", mu_new))
-      full_data[country == country_var & 
-                  full_data$datetime == time_var &
+      final_data[country == country_var & 
+                  final_data$datetime == time_var &
                   type==type_var ]$mu_est <- mu_new
     }
   }
@@ -301,13 +136,13 @@ for(type_var in c("NEWS","TWITTER")){
 for(type_var in c("NEWS","TWITTER")){
   for(category_var in ALL_CATEGORIES) {
     for(time_var in ALL_TIMES){
-      data <- full_data[category == category_var & 
-                        full_data$datetime == time_var &
+      data <- final_data[category == category_var & 
+                        final_data$datetime == time_var &
                         type == type_var]
       v_old = 0
       v_new = 1
       i = 0
-      while(i < 100 & abs(v_old - v_new) > PRECISION ){
+      while(i <10000000  & abs(v_old - v_new) > PRECISION ){
         i <- i + 1
         v_old = v_new
         expval <- exp(data$mu_est + v_old)
@@ -316,8 +151,8 @@ for(type_var in c("NEWS","TWITTER")){
       }
       print(paste("New minimum for time", time_var, 
                   " in category", category_var, " is ", v_new))
-      full_data[category == category_var & 
-                  full_data$datetime == time_var&
+      final_data[category == category_var & 
+                  final_data$datetime == time_var&
                   type==type_var]$v_est <- v_new
     }
   }
@@ -326,16 +161,18 @@ for(type_var in c("NEWS","TWITTER")){
 
 ```
 
+
+Check out the $$v$$ estimates:
+
 ```{r fig.width=12, fig.height=8, cache=TRUE}
-
-ggplot(full_data,aes(datetime,v_est,color=type)) + geom_point() + geom_line() + facet_wrap(~category)
-
+ggplot(final_data,aes(datetime,v_est,color=type)) + geom_point() + geom_line() + facet_wrap(~category)
 ```
 
+Check out the $$\mu$$ estimates:
 
 ```{r fig.width=12, fig.height=8, cache=TRUE}
 
-ggplot(full_data,aes(datetime,mu_est,color=type)) + geom_point() + geom_line() + facet_wrap(~country)
+ggplot(final_data,aes(datetime,mu_est,color=type)) + geom_point() + geom_line() + facet_wrap(~country)
 
 ```
 
@@ -385,20 +222,20 @@ get_resampled <- function(t, eta_sample_set, sigma, data,
 ###MCEM alg.
 
 
-interesting_categories <- c("violence","war","tribe","terrorist_org","nationality","protest")#,"human_rights",
+#interesting_categories <- c("violence","war","tribe","terrorist_org","nationality","protest")#,"human_rights",
 
 results <- data.table(expand.grid(country=ALL_COUNTRIES,
-                       category=interesting_categories,
+                       category=ALL_CATEGORIES,
                        type=c("NEWS","TWITTER"),
                        a=-99,sigma=-99,stringsAsFactors=F))
 eta_samples_list <- list()
 
 ##for each word
 for(type_var in c("TWITTER","NEWS")){
-  for(category_var in interesting_categories){
+  for(category_var in ALL_CATEGORIES){
     ##A is global across the word
     ##sigma is defined per country
-    A <- 1
+    A <- 1.5
     old_A <- -1
     sigma <- as.list(sapply(ALL_COUNTRIES,function(l){return(3)}))
     old_sigma <- as.list(sapply(ALL_COUNTRIES,function(l){return(-1)}))
@@ -418,7 +255,7 @@ for(type_var in c("TWITTER","NEWS")){
       ##get samples for each country
       for(country_var in ALL_COUNTRIES){  
         print(paste("STARTING:::::::: ",country_var,category_var))
-        data <- full_data[country == country_var & category == category_var & type == type_var]
+        data <- final_data[country == country_var & category == category_var & type == type_var]
         
         country_sigma <- sigma[[country_var]]
         
@@ -428,8 +265,8 @@ for(type_var in c("TWITTER","NEWS")){
           init_date_data <- data[data$datetime == ALL_TIMES[1]]
           init_p <- init_date_data$c_wrt/init_date_data$s_wrt
           mean_param <- log(init_p/(1-init_p)) - init_date_data$v_est - init_date_data$mu_est
-          eta_samples[1,] <- get_resampled(1, rnorm(N_SAMPLES_PER_TIME_PERIOD,mean_param,1), 1, data)
-          
+          eta_samples[1,] <- rnorm(N_SAMPLES_PER_TIME_PERIOD,mean_param,country_sigma)
+        
           ##Forward Filtering (SIR)
           for(t in 2:N_TIME_PERIODS){
             #print(paste0("\t",t))
@@ -480,20 +317,12 @@ for(type_var in c("TWITTER","NEWS")){
       
     } ##end while iter
     eta_samples_list <- c(eta_samples_list,per_cat_eta_samples_list)
-    save(eta_samples_list, file="eta_samples_list.rdata")
+    save(eta_samples_list, file="result_data/eta_samples_list.rdata")
+    save(results, file="result_data/results.rdata")
   } ## category for loop
 
 } ## type for loop
 
-####Some sanity checks to make sure that it looks like its smoothing the actual MLEs
-# df <- full_data[country == "uae" & category == category_var & type == type_var]
-# df$init_p <- data$c_wrt/data$s_wrt
-# df$est <- with(df, log(init_p/(1-init_p)) - v_est - mu_est)
-# ggplot(melt(df,id="datetime",measure=c("est")), aes(datetime,value,color=variable)) + geom_point() + geom_line()
-# df$est2 <- apply(per_cat_eta_samples_list[["NEWS_uae_terrorist_org"]],1, mean)
-# df$est3<- apply(per_cat_eta_samples_list[["NEWS_uae_terrorist_org"]],1, mean)
-# df$est4<- apply(eta_samples_list[["NEWS_uae_terrorist_org"]],1, mean)
-# ggplot(melt(df,id="datetime",measure=c("est","est2","est3","est4")), aes(datetime,value,color=variable)) + geom_point() + geom_line()
 
 results <- results[paste(type,country,category,sep="_") %in% names(eta_samples_list)]
 eta_res <- results[,as.list(apply(eta_samples_list[[paste(type,country,category,sep="_")]],1,mean)),by=c("type","country","category","a","sigma")]

@@ -1,0 +1,59 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\begin{document}
+
+The model in Eisenstein et al's work is as follows:
+
+\begin{align}
+c_{w,r,t} &\sim \mathrm{Binomial}(s_{r,t}, \mathrm{Logistic}(\eta_{w,r,t} + v_{w,t} + \mu_{r,t})) \\
+\eta_{w,r,t} &\sim \mathrm{N}(\sum_{r'} a_{r',r}\eta_{w,r',t-1}, \sigma^2_{w,r}) 
+\end{align}
+
+Here the subscripts represent the following: $w$ is the word, $r$ is the region, $t$ is the timestep. The parameter $c_{w,r,t}$ is the number of unique individuals in region $r$ at time $t$ who used word $w$, $s_{r,t}$ is the number of users in $r$ at $t$ who tweeted at least once. The parameter $\eta_{w,r,t}$ is the activation for word $w$ at time $t$ in region $r$. The parameter $v_{w,t}$ is the overall activation of $w$ at $t$, and $\mu_{r,t}$ is the activation of the region $r$ at time $t$.  Finally, the parameter $a_{r',r}$ is the lagged influence of region $r'$ on the activation of all words in region $r$.
+
+Because of the lagged influence assumption, the model proposed is a latent vector autoregression movel, where $\eta_{w,r,t}$ and $A$, the matrix of $a_{r',r}$ values, are the parameters of interest, and $v$ and $\mu$ are control parameters that partial out effects of oversampling of particular words at particilar times and particular regions at particular times. The full autoregression model can be specified as a Markov model with an *observation model* (on $c$) and a *dynamics*  model on $\eta$. The model we thus wish to estimate is:
+
+\begin{equation}
+	P(\eta,c|s; A, \sigma^2,\mu,v) = P(c | \eta, s; \mu, v) P(\eta; A)
+\end{equation}
+
+
+In order to do so, we adopt the same estimation process as was used by Eisenstein.  We first consider the estimation of $v$ and $\mu$ for each word assuming $\eta$ is 0.  To do so, we utilize a stepwise procedure.  First, we obtain a simplified $\bar{v_w}$ as the inverse logistic function ($\log(\frac{x}{1-x})$) of the total proportion of users that utilized word $w$ across all time steps.
+
+Using this, we now would like to compute the MLE of each $\mu_{r,t}$ using $\bar{v_w}$ as the value for each $v_{w,t}$ (and again, setting all $\eta = 0$).  For each 
+
+ Below I derive the MLE for a single time point $t$ for a single region $r$ (these subscripts are thus implicit), a step absent presumably due to simplicitly/space from the original article.  In order to do so, I have to optimize the following:
+
+
+\begin{align}
+  \hat{\mu_r} &= \mathrm{argmax}_{\mu} \prod_w P(c_w | s; \mu, v_w) \\
+  &= \mathrm{argmax}_{\mu} \prod_w   ({}^{c_w}_{s}) \frac{1}{1+\exp(-(v_w+\mu))}^{c_w} (1- \frac{1}{ 1+\exp(-(v_w+\mu))})^{s-c_w} \\
+  &= \mathrm{argmax}_{\mu} \sum_w \log({}^{c_w}_{s})  + \log(\frac{1}{1+ \exp(-(v_w+\mu))}^{c_w}) + \log( (1- \frac{1}{ 1+ \exp(-(v_w+\mu))})^{s-c_w}) \\
+  &= \mathrm{argmax}_{\mu}  \sum_w \log({}^{c_w}_{s})  - c_w \log(1+ \exp(-(v_w+\mu)) + (s-c_w) \log (1- \frac{1}{ 1+ \exp(-(v_w+\mu))})
+\end{align}
+
+We can now take the derivative of the above expression and use it for a gradient descent approach to maximizing the function above.  The gradient can be derived as follows:
+
+\begin{align}
+ \frac{\partial}{\partial \mu} \sum_w \log({}^{c_w}_{s})  - c_w \log(1+ \exp(-(v_w+\mu))) + (s-c_w) \log (1- \frac{1}{ 1+ \exp(-(v_w+\mu))}) \\
+  =  \sum_w \frac{(c_w-s) \exp(v_w+\mu)}{ 1+ \exp(v_w+\mu)} +\frac{c_w}{1+ \exp(v_w+\mu)}  
+\end{align}
+
+
+
+%
+%BASICALLY RIGHT FOR V
+%\begin{align}
+%  \hat{\mu} &= \mathrm{argmax}_\mu \prod_r  P(c_r | s_r; \mu, v_r) \\
+%  &= \mathrm{argmax}_\mu \prod_r ({}^{c_r}_{s_r}) \frac{1}{ \exp(-(v_r+\mu))}^{c_r} (1- \frac{1}{ \exp(-(v_r+\mu))})^{s_r-c_r} \\
+%  &= \mathrm{argmax}_\mu \sum_r \log({}^{c_r}_{s_r})  + \log(\frac{1}{ \exp(-(v_r+\mu))}^{c_r}) + \log( (1- \frac{1}{ \exp(-(v_r+\mu))})^{s_r-c_r}) \\
+%  &= \mathrm{argmax}_\mu \sum_r \log({}^{c_r}_{s_r})  - c_r (-(v_r+\mu)) + (s_r-c_r) \log (1- \frac{1}{ \exp(-(v_r+\mu))})
+%\end{align}
+%
+%\begin{align}
+%  0 &= \frac{\partial}{\partial \mu}   \sum_r \log({}^{c_r}_{s_r})  + c_rk_r+ c_r\mu + (s_r-c_r) \log (1- \frac{1}{ \exp(-(v_r+\mu))}) \\
+%	&= \frac{\partial}{\partial \mu} 	\sum_r  c_r +  (s_r-c_r) \frac{\exp(v_r + \mu)}{1 + \exp(v_r + \mu)}
+%\end{align}
+
+\end{document}
