@@ -89,8 +89,9 @@ We use this as the input for a gradient descent proceedure to estimate $\mu$. We
 
 
 ```{r, cache=TRUE, results='hide'}
-
-STEP_SIZE = .00001 # step size
+library(snowfall)
+load("result_data/final_data.rdata")
+STEP_SIZE = .0000001 # step size
 PRECISION = .000000001
 
 ##generic gradient, the estimation doesn't change much between the two variables
@@ -102,9 +103,24 @@ gradient_function <- function(old_val, data, expval){
   )
 }
 
+
 ##dummy data
 final_data$mu_est <- -99
 final_data$v_est <- -99
+
+
+sfInit(parallel=TRUE,cpus=2)
+sfExport("get_network_data")
+sfExport("get_network_stats")
+sfExport("SUSP_FN")
+sfLibrary(data.table)
+sfLibrary(stringr)
+
+#RETWEET NETWORK
+#REPLY NETWORK
+#MENTIONS NETWORK
+network_files <- Sys.glob(paste0(NETWORK_DIR,"*"))
+basic_nets <- parLapply(sfGetCluster(),network_files, function(network_file){
 
 ## Gradient descent for mu
 for(type_var in c("NEWS","TWITTER")){
@@ -116,7 +132,7 @@ for(type_var in c("NEWS","TWITTER")){
       mu_old = 0
       mu_new = 1
       i = 0
-      while(i < 10000000  & abs(mu_old - mu_new) > PRECISION ){
+      while(i < 1000000  & abs(mu_old - mu_new) > PRECISION ){
         i <- i + 1
         mu_old = mu_new
         expval <- exp(data$simp_v_w + mu_old)
@@ -128,6 +144,7 @@ for(type_var in c("NEWS","TWITTER")){
       final_data[country == country_var & 
                   final_data$datetime == time_var &
                   type==type_var ]$mu_est <- mu_new
+       
     }
   }
 }
@@ -142,7 +159,7 @@ for(type_var in c("NEWS","TWITTER")){
       v_old = 0
       v_new = 1
       i = 0
-      while(i <10000000  & abs(v_old - v_new) > PRECISION ){
+      while(i < 1000000  & abs(v_old - v_new) > PRECISION ){
         i <- i + 1
         v_old = v_new
         expval <- exp(data$mu_est + v_old)
@@ -158,6 +175,7 @@ for(type_var in c("NEWS","TWITTER")){
   }
 }
 
+save(final_data,file="result_data/final_data_w_mu_v.rdata")
 
 ```
 
@@ -210,9 +228,11 @@ get_resampled <- function(t, eta_sample_set, sigma, data,
     p_param <- 1/(1+ exp(-(date_data$mu_est+date_data$v_est+eta_sample_set[sample_num])))
     weights[sample_num] <- dbinom(date_data$c_wrt,date_data$s_wrt, p_param)
   }
+  print(paste(sum(is.na(weights)),sum(is.nan(weights)), sum(weights),sum(weights/sum(weights))))
   weights <- weights/sum(weights)
   #print(weights[weights > .001])
   ##it seems wise to resample here:
+
   sampled <- sample(eta_sample_set,size=n_samples,replace=T,prob=weights)
   #print(paste("unique samples: ", length(unique(sampled))/n_samples))
   return(sampled)
@@ -316,9 +336,11 @@ for(type_var in c("TWITTER","NEWS")){
       results[category==category_var & type == type_var]$a <- A
       
     } ##end while iter
+    
     eta_samples_list <- c(eta_samples_list,per_cat_eta_samples_list)
-    save(eta_samples_list, file="result_data/eta_samples_list.rdata")
+    save(per_cat_eta_samples_list, file=file.path("result_data",paste0(type,"_",category,"_eta_samples.rdata")))
     save(results, file="result_data/results.rdata")
+    
   } ## category for loop
 
 } ## type for loop

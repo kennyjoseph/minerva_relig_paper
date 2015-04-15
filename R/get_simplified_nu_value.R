@@ -23,7 +23,7 @@ ALL_COUNTRIES <- ALL_TWITTER_COUNTRIES
 ##note this isn't truly the total number of users, its just the total that
 ##used any of the categories
 ##determined by casos_total_n_users.py
-TOTAL_N_TWITTER_USERS <- 2896626 
+TOTAL_N_TWITTER_USERS <- 2841825
 
 N_NEWS_ARTICLES <- length(unique(ctm[ymd_date %in% ALL_TIMES]$unique_id))
 
