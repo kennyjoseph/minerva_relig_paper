@@ -3,7 +3,7 @@ library(data.table)
 load("result_data/final_data.rdata")
 STEP_SIZE = .0000001 # step size
 PRECISION = .000000001
-N_CPU=60
+N_CPU=30
 
 ##generic gradient, the estimation doesn't change much between the two variables
 gradient_function <- function(old_val, data, expval){
