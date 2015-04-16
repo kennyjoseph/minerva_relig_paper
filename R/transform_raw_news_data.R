@@ -52,7 +52,6 @@ setnames(articles_per_cat,"V1","c_wrt")
 
 ctm$md <- paste(year(ctm$date),month(ctm$date),sep="-")
 articles_per_month <- ctm[,length(articleNumber),by=c("md","country")]
-setnames(articles_per_day,c(""))
 articles_per_month$country[articles_per_month$country =="saudi arabia"] <- "saudi_arabia"
 articles_per_month$country[articles_per_month$country =="united arab emirates"] <- "uae"
 setnames(articles_per_month,"V1","s_wrt")
