@@ -13,6 +13,7 @@ gradient_function <- function(old_val, data, expval){
   )
   )
 }
+load("all_stuff.rdata")
 
 sfInit(parallel=TRUE,cpus=N_CPU)
 sfExport("gradient_function")

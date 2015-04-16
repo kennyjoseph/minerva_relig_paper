@@ -12,7 +12,7 @@ remove_countries <- c("sudan","qatar")
 inv_logis <- function(x){return(log(x/(1-x)))}
 
 load("result_data/news_data.rdata")
-load("result_data/full_news_data.rdata")
+load("result_data/full_news_data_all.rdata")
 load("result_data/full_twitter_data.rdata")
 load("result_data/twitter_data.rdata")
 
@@ -45,7 +45,8 @@ news_data$type <- "NEWS"
 
 final_data <- rbind(news_data,twitter_data)
 final_data <- final_data[datetime%in% ALL_TIMES & category %in% ALL_CATEGORIES]
-save(final_data,ALL_CATEGORIES,ALL_TIMES,ALL_COUNTRIES,TOTAL_N_TWITTER_USERS,N_NEWS_ARTICLES,file="result_data/final_data.rdata")
+save(final_data,file="result_data/final_data.rdata")
+save(ALL_CATEGORIES,ALL_TIMES,ALL_COUNTRIES,TOTAL_N_TWITTER_USERS,N_NEWS_ARTICLES,file="all_stuff.rdata")
 
 
 
