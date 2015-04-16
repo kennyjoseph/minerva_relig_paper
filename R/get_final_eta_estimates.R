@@ -2,13 +2,14 @@ library(snowfall)
 library(data.table)
 
 N_SAMPLES_PER_TIME_PERIOD <- 1000
-N_TIME_PERIODS <- length(ALL_TIMES)
 THRESHOLD <- .01
-MAX_ITERATION <- 20
+MAX_ITERATION <- 25
 N_CPU=30
 
-load("result_data/final_data.rdata")
+load("all_stuff.rdata")
 load("result_data/final_data_w_mu_v.rdata")
+
+N_TIME_PERIODS <- length(ALL_TIMES)
 
 ##Slow but right
 get_resampled <- function(t, eta_sample_set, sigma, data, 
@@ -32,7 +33,6 @@ get_resampled <- function(t, eta_sample_set, sigma, data,
   
 }
 
-
 sfInit(parallel=TRUE,cpus=N_CPU)
 sfExport("get_resampled")
 sfExport("N_SAMPLES_PER_TIME_PERIOD")
@@ -46,6 +46,7 @@ sfLibrary(data.table)
 
 runs <- data.table(expand.grid(category=ALL_CATEGORIES,
                                type=c("NEWS","TWITTER")))
+set.seed(0)
                                   
 results <- parApply(sfGetCluster(),runs,1, function(run){
     category_var <- run["category"]
@@ -90,7 +91,7 @@ results <- parApply(sfGetCluster(),runs,1, function(run){
           eta_samples[t,] <- rnorm(n=N_SAMPLES_PER_TIME_PERIOD,
                                    mean=A*eta_samples[t-1,],
                                    sd=rep(country_sigma,N_SAMPLES_PER_TIME_PERIOD))
-          eta_samples[t,] <- get_resampled(t, eta_samples[t,],country_sigma,data)
+          eta_samples[t,] <- get_resampled(t, eta_samples[t,],country_sigma,data,ALL_TIMES)
         }
         ##Backwards Smoothing
         for(t in seq(N_TIME_PERIODS,1,-1)){
@@ -140,6 +141,6 @@ results <- parApply(sfGetCluster(),runs,1, function(run){
                     a=A,
                     country=names(sigma),
                     sigma=as.vector(unlist(sigma)))
-    save(df,file="result_data/results.rdata")
+    save(df,file=file.path("result_data",paste0(type_var,"_",category_var,"_results.rdata")))
     return(df)
 })
