@@ -5,8 +5,9 @@ N_SAMPLES_PER_TIME_PERIOD <- 1000
 N_TIME_PERIODS <- length(ALL_TIMES)
 THRESHOLD <- .01
 MAX_ITERATION <- 20
-N_CPU=2
+N_CPU=30
 
+load("result_data/final_data.rdata")
 load("result_data/final_data_w_mu_v.rdata")
 
 ##Slow but right
@@ -46,7 +47,7 @@ sfLibrary(data.table)
 runs <- data.table(expand.grid(category=ALL_CATEGORIES,
                                type=c("NEWS","TWITTER")))
                                   
-results <- parApply(sfGetCluster(),runs[1:2,],1, function(run){
+results <- parApply(sfGetCluster(),runs,1, function(run){
     category_var <- run["category"]
     type_var <- run["type"]
     ##A is global across the word
@@ -135,7 +136,7 @@ results <- parApply(sfGetCluster(),runs[1:2,],1, function(run){
     save(per_cat_eta_samples_list, file=file.path("result_data",paste0(type_var,"_",category_var,"_eta_samples.rdata")))
     df <- data.frame(type=type_var,
                     category=category_var,
-                    iter=i,
+                    iter=turn_iter,
                     a=A,
                     country=names(sigma),
                     sigma=as.vector(unlist(sigma)))
