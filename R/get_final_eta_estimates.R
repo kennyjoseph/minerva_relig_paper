@@ -2,7 +2,7 @@ library(snowfall)
 library(data.table)
 
 N_SAMPLES_PER_TIME_PERIOD <- 1000
-THRESHOLD <- .01
+THRESHOLD <- .05
 MAX_ITERATION <- 25
 N_CPU=30
 
@@ -55,7 +55,7 @@ results <- parApply(sfGetCluster(),runs,1, function(run){
     ##sigma is defined per country
     A <- 1.5
     old_A <- -1
-    sigma <- as.list(sapply(ALL_COUNTRIES,function(l){return(3)}))
+    sigma <- as.list(sapply(ALL_COUNTRIES,function(l){return(5)}))
     old_sigma <- as.list(sapply(ALL_COUNTRIES,function(l){return(-1)}))
     turn_iter <- 0
     
@@ -74,9 +74,7 @@ results <- parApply(sfGetCluster(),runs,1, function(run){
       for(country_var in ALL_COUNTRIES){  
         print(paste("STARTING:::::::: ",country_var,category_var))
         data <- final_data[country == country_var & category == category_var & type == type_var]
-        
         country_sigma <- sigma[[country_var]]
-        
         ##E STEP
         ##initialize with p0
         eta_samples <- matrix(-1,nrow=length(ALL_TIMES),ncol=N_SAMPLES_PER_TIME_PERIOD)
@@ -112,7 +110,7 @@ results <- parApply(sfGetCluster(),runs,1, function(run){
         m2 <- data.frame(x=c(),y=c())
         for(time_it in 2:(length(ALL_TIMES))){
           m2 <- rbind(m2, data.frame(x=mean(eta_samples[time_it,]),
-                                     y=old_A*mean(eta_samples[time_it-1,])))
+                                     y=A*mean(eta_samples[time_it-1,])))
         } 
         old_sigma[[country_var]] <- country_sigma
         sigma[[country_var]] <- sqrt(sum((m2$x-m2$y)^2)/nrow(m2))
@@ -124,6 +122,7 @@ results <- parApply(sfGetCluster(),runs,1, function(run){
         ##save the samples
         esl <- list(x=eta_samples)
         names(esl) <- paste(type_var,country_var,category_var,sep="_")
+        plot(apply(eta_samples,1,mean))
         per_cat_eta_samples_list <- c(per_cat_eta_samples_list,esl)
       } ##end for country
       
