@@ -4,9 +4,9 @@
 % This is a simple template for a LaTeX document using the "article" class.
 % See "book", "report", "letter" for other types of document.
 \documentclass[11pt,man]{article}
-\usepackage[natbibapa]{apacite}
 \usepackage{array}
 \usepackage{color}
+\usepackage[sort]{natbib}
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -19,6 +19,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{enumitem}
 \usepackage{authblk}
+\usepackage{tabularx}
 \newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
 
 \definecolor{Orange}{rgb}{1,0.5,0}
@@ -50,26 +51,25 @@
 
 \begin{document}
 \maketitle
-\renewcommand{\baselinestretch}{2}\normalsize
-
 \begin{abstract}
-
+asdfsadf
 \end{abstract}
 
 \input{intro}
 
 \input{related_work}
 
-\input{todo}
+\input{methodology}
 
-\input{case_study}
-
-\input{deriv}
+\input{general_results}
+	\input{news_v_twitter}
+	\input{compare_to_overthrow}
+	\input{case_study}
 
 \input{conclusion}
 
 
-\bibliographystyle{apacite}
+\bibliographystyle{apa}
 \bibliography{mybib} %your bib file
 
 
