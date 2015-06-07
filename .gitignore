@@ -2,6 +2,9 @@
 __pycache__/
 *.py[cod]
 
+R/tmp/
+R/result_data/full_news_data_all.rdata
+
 # C extensions
 *.so
 
