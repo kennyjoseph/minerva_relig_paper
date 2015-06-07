@@ -3,7 +3,7 @@
 
 % This is a simple template for a LaTeX document using the "article" class.
 % See "book", "report", "letter" for other types of document.
-\documentclass[11pt,man]{article}
+\documentclass[journal]{IEEEtran}
 \usepackage{array}
 \usepackage{color}
 \usepackage[sort]{natbib}
@@ -37,23 +37,27 @@
 
 \def\citeapos#1{\citeauthor{#1}'s (\citeyear{#1})}
 
-\title{Using news media and Twitter to provide a quantitative overview of factors related to the outbreak, successes and failures of the "Arab Spring" }
+\title{On the dynamics of topical content during the Arab Spring across news media and Twitter}
 
-\author[1]{Kenneth Joseph \thanks{\texttt{kjoseph@cs.cmu.edu}}}
-\author[1]{Matthew Benigni \thanks{\texttt{mbenigni@cs.cmu.edu}}}
-\author[1]{Wei Wei \thanks{\texttt{weiwei@cs.cmu.edu}}}
-\author[1]{Kathleen M. Carley\thanks{\texttt{kathleen.carley@cs.cmu.edu}}}
-\author[2]{Mia Bloom\thanks{\texttt{mia\_bloom@uml.edu}}}
 
-\affil[1]{Computation, Organization and Society Program\\ Carnegie Mellon University\\ 5000 Forbes Ave. \\ Pittsburgh, PA, USA}
-\affil[2]{Center for Terrorism and Security Studies\\ University of Massachusetts, Lowell\\ Lowell, MA, USA}
+\author{Kenneth~Joseph, Matthew~Benigni, Wei~Wei, 
+        Kathleen~M.~Carley,~\IEEEmembership{Fellow,~IEEE,}
+        and~Mia~Bloom% stops a space
+\thanks{K. Joseph, M. Benigni, W. Wei, and Prof. K.M. Carley are with the Societal Computing Program, Carnegie Mellon University,
+Pittsburgh, PA, USA e-mail: kjoseph,mbenigni,weiwei,kathleen.carley@cs.cmu.edu.}% <-this % stops a space
+\thanks{Prof. M. Bloom is Professor of Communications at Georgia State University, GA, USA email: mbloom3@gsu.edu}% <-this % stops a space
+}
 
+\markboth{IEEE Computational Social Systems}%
+{Joseph \MakeLowercase{\textit{et al.}}: Studying the ``Arab Spring''}
 
 \begin{document}
 \maketitle
 \begin{abstract}
 asdfsadf
 \end{abstract}
+
+\IEEEpeerreviewmaketitle
 
 \input{intro}
 
@@ -62,8 +66,6 @@ asdfsadf
 \input{methodology}
 
 \input{general_results}
-	\input{news_v_twitter}
-	\input{compare_to_overthrow}
 	\input{case_study}
 
 \input{conclusion}

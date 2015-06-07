@@ -1,3 +1,21 @@
 \section{Conclusion}
 
-Our analysis is cowith the acknowledgement of the rash of recent claims over the methodological trapdoors that exist within this type of data \cite{tufekci_big_2014,ruths_social_2014,joseph_approach_2014,morstatter_is_2013}. While these issues are not to be ignored, the present work utilizes cautious, nuanced analysis techniques which account for, or at least admit, these possible biases. 
+In the present work, we present a preliminary comparison of the content of news media and Twitter data over a variety of themes, countries and time periods from data on the Arab Spring. In order to control for biases in the data, we utilized a latent vector autoregressive model first introduced by \cite{eisenstein_diffusion_2014}. Our work focuses on two research questions. First, we considered the extent to which Twitter and news were focused on the same themes at the same time with respect to the same countries. With respect to RQ1, we find the following: 
+\begin{itemize}
+	\item There is a moderate but significant correlation in the focus of Twitter and news media over time and country across a variety of themes
+	\item The level of correlation is generally stronger for themes related to the concept of revolution
+	\item The level of correlation is strongest with respect to the discussion of Ethnic identities in the region
+\end{itemize}
+
+We then considered how well significant changes in thematic content in Twitter and news media signaled important events occurring on the ground. With respect to RQ2, we find the following: 
+\begin{itemize}
+	\item The largest jumps in thematic focus in news data tended to occur in content related to war and protest when large-scale protests occurred
+	\item The largest jumps in thematic focus in Twitter data tended to occur in content related to themes of adaptation and change before or during election periods
+	\item In both news and Twitter data, results were biased by the use of Western-centric, English-only data
+\end{itemize}
+
+Finally, we considered a case study that took a wider view of the relationship between countries and content. We found that when grouping countries in terms of average focus across themes, the resulting clusters were roughly organized by the level of social change that occurred in the country. This did not hold true in all cases, particularly for Jordan and Lebanon. Future work is required to appreciate both the underlying social factors influencing why countries clustered in the way they did, and why Jordan and Lebanon appear to be outliers. Our case study also considered how the data roughly supported  \citeapos{cottle_media_2011} perspective of the way in which news media and Twitter were used in the discussion of protests in countries where significant social change occurred.  Again, future work is needed to more rigorously test these findings.
+
+In general, we find that our work presents a favorable outlook of the opportunities for broadly scoped study of news and Twitter data and their potential for supporting or refuting the host of qualitative work that currently exists on the Arab Spring.  However, several limitations much be kept in mind. Beyond a focus on Western-centric, English only data, myriad other methodological trapdoors exist in studying social media data \cite{tufekci_big_2014,ruths_social_2014,morstatter_is_2013}. Although our model does well at dealing with some of these biases, results with our Stopword-based themes show that further work is necessary in this area.
+
+Additionally, it is very difficult to truly assess how well models of social change are actually capturing important events on the ground.  This is so for at least two reasons. First, a comprehensive, quantitative measure of ground truth events during revolutions is very difficult, if at all possible, to come by.  Event-level datasets, particularly during the Arab Spring, are consequently drawn from newspaper data, and  therefore cannot be used as a means to assess another model based on the same data.  Second, during periods of unrest, important events are rampant, and thus our observations here are important only in so far as we can state that the model captures particular sorts of events (e.g. elections) with a higher frequency than others.  Thus, work on creating event datasets using mixed-method and human-in-the-loop approaches is vital in furthering our ability to develop statistical models of text content that we can compare to actual events on the ground during periods of revolution \citep{hanna_developing_2014}.
